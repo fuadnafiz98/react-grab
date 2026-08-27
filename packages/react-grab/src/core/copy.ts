@@ -4,7 +4,7 @@ import { normalizeError } from "../utils/normalize-error.js";
 import { getTagName } from "../utils/get-tag-name.js";
 import { ABORTED_PROMISE_RESULT, racePromiseWithAbort } from "../utils/race-promise-with-abort.js";
 import type { StackFrame } from "bippy/source";
-import type { ReactGrabEntry, ReactGrabStackFrame } from "../types.js";
+import type { CopySuccessContext, ReactGrabEntry, ReactGrabStackFrame } from "../types.js";
 
 interface CopyFlowOptions {
   getContent?: (elements: Element[]) => Promise<string> | string;
@@ -17,7 +17,7 @@ interface CopyFlowHooks {
   onBeforeCopy: (elements: Element[]) => Promise<void>;
   transformCopyContent: (content: string, elements: Element[]) => Promise<string>;
   onAfterCopy: (elements: Element[], didCopy: boolean) => void;
-  onCopySuccess: (elements: Element[], content: string) => void;
+  onCopySuccess: (elements: Element[], content: string, context: CopySuccessContext) => void;
   onCopyError: (error: Error) => void;
 }
 
@@ -143,7 +143,7 @@ export const runCopyFlow = async (
   }
 
   if (!didStartClipboardWrite && options.signal?.aborted) return CANCELLED_COPY_FLOW_RESULT;
-  if (didCopy) hooks.onCopySuccess(elements, finalContent);
+  if (didCopy) hooks.onCopySuccess(elements, finalContent, { prompt: prependedPrompt });
   hooks.onAfterCopy(elements, didCopy);
 
   return { status: didCopy ? "succeeded" : "failed" };

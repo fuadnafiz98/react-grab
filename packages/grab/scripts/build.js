@@ -54,8 +54,18 @@ const transformReadme = () => {
   content = content
     .replace(
       /# <img .* \/>.*React Grab/m,
-      '# <img src="https://github.com/aidenybai/react-grab/blob/main/.github/public/logo.png?raw=true" width="60" align="center" /> Grab',
+      '# <img src="https://github.com/fuadnafiz98/react-grab/blob/main/.github/public/logo.png?raw=true" width="60" align="center" /> Grab',
     )
+    .replace(/%40fuadnafiz98%2Freact-grab/g, "%40fuadnafiz98%2Fgrab")
+    .replace(
+      /npmjs\.com\/package\/@fuadnafiz98\/react-grab/g,
+      "npmjs.com/package/@fuadnafiz98/grab",
+    )
+    .replace(/npm install @fuadnafiz98\/react-grab/g, "npm install @fuadnafiz98/grab")
+    .replace(/unpkg\.com\/@fuadnafiz98\/react-grab/g, "unpkg.com/@fuadnafiz98/grab")
+    .replace(/`@fuadnafiz98\/react-grab\/primitives`/g, "`@fuadnafiz98/grab/primitives`")
+    .replace(/import\("@fuadnafiz98\/react-grab"\)/g, 'import("@fuadnafiz98/grab")')
+    .replace(/from "@fuadnafiz98\/react-grab\/primitives"/g, 'from "@fuadnafiz98/grab/primitives"')
     .replace(/bundlephobia\/minzip\/react-grab/g, "bundlephobia/minzip/grab")
     .replace(/bundlephobia\.com\/package\/react-grab/g, "bundlephobia.com/package/grab")
     .replace(/img\.shields\.io\/npm\/v\/react-grab/g, "img.shields.io/npm/v/grab")

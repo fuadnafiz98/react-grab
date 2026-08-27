@@ -234,7 +234,11 @@ export interface PluginHooks {
   onBeforeCopy?: (elements: Element[]) => void | Promise<void>;
   transformCopyContent?: (content: string, elements: Element[]) => string | Promise<string>;
   onAfterCopy?: (elements: Element[], success: boolean) => void | Promise<void>;
-  onCopySuccess?: (elements: Element[], content: string) => void | Promise<void>;
+  onCopySuccess?: (
+    elements: Element[],
+    content: string,
+    context: CopySuccessContext,
+  ) => void | Promise<void>;
   onCopyError?: (error: Error) => void | Promise<void>;
   onStateChange?: (state: ReactGrabState) => void | Promise<void>;
   onPromptModeChange?: (isPromptMode: boolean, context: PromptModeContext) => void | Promise<void>;
@@ -259,6 +263,10 @@ export interface PluginHooks {
   ) => AgentContext | Promise<AgentContext>;
   transformActionContext?: (context: ActionContext) => ActionContext;
   transformOpenFileUrl?: (url: string, filePath: string, lineNumber?: number) => string;
+}
+
+export interface CopySuccessContext {
+  prompt?: string;
 }
 
 export interface PluginConfig {

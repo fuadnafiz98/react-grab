@@ -19,6 +19,7 @@ import type {
   SettableOptions,
   AgentContext,
   ActionContext,
+  CopySuccessContext,
 } from "../types.js";
 import { DEFAULT_THEME, deepMergeTheme } from "./theme.js";
 import { DEFAULT_KEY_HOLD_DURATION_MS, DEFAULT_MAX_CONTEXT_LINES } from "../constants.js";
@@ -375,8 +376,8 @@ const createPluginRegistry = (initialOptions: SettableOptions = {}) => {
       callHookReduce("transformCopyContent", content, elements),
     onAfterCopy: (elements: Element[], success: boolean) =>
       callHook("onAfterCopy", elements, success),
-    onCopySuccess: (elements: Element[], content: string) =>
-      callHook("onCopySuccess", elements, content),
+    onCopySuccess: (elements: Element[], content: string, context: CopySuccessContext) =>
+      callHook("onCopySuccess", elements, content, context),
     onCopyError: (error: Error) => callHook("onCopyError", error),
     onStateChange: (state: ReactGrabState) => callHook("onStateChange", state),
     onPromptModeChange: (isPromptMode: boolean, context: PromptModeContext) =>

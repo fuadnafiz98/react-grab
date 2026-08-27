@@ -1,23 +1,22 @@
 import { readdirSync, readFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-
-const EXPECTED_REPOSITORY_URL = "git+https://github.com/aidenybai/react-grab.git";
-const WORKSPACE_GLOBS = ["packages", "apps"];
+import { FORK_RELEASE_DIRECTORY_NAME, FORK_REPOSITORY_URL } from "./fork-release-constants.mjs";
 
 const rootDirectory = join(dirname(fileURLToPath(import.meta.url)), "..");
+const releaseRootDirectory = join(rootDirectory, FORK_RELEASE_DIRECTORY_NAME);
 
 const collectPackageManifests = () => {
   const manifests = [];
-  for (const workspaceGlob of WORKSPACE_GLOBS) {
-    const workspaceDirectory = join(rootDirectory, workspaceGlob);
-    if (!existsSync(workspaceDirectory)) continue;
-    for (const entry of readdirSync(workspaceDirectory, { withFileTypes: true })) {
-      if (!entry.isDirectory()) continue;
-      const manifestPath = join(workspaceDirectory, entry.name, "package.json");
-      if (!existsSync(manifestPath)) continue;
-      manifests.push(manifestPath);
-    }
+  if (!existsSync(releaseRootDirectory)) {
+    console.error(`Fork release directory is missing: ${releaseRootDirectory}`);
+    process.exit(1);
+  }
+  for (const entry of readdirSync(releaseRootDirectory, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    const manifestPath = join(releaseRootDirectory, entry.name, "package.json");
+    if (!existsSync(manifestPath)) continue;
+    manifests.push(manifestPath);
   }
   return manifests;
 };
@@ -31,7 +30,7 @@ for (const manifestPath of collectPackageManifests()) {
   const repositoryUrl =
     typeof manifest.repository === "string" ? manifest.repository : manifest.repository?.url;
 
-  if (repositoryUrl !== EXPECTED_REPOSITORY_URL) {
+  if (repositoryUrl !== FORK_REPOSITORY_URL) {
     offendingPackages.push({
       name: manifest.name,
       manifestPath,
@@ -42,7 +41,7 @@ for (const manifestPath of collectPackageManifests()) {
 
 if (offendingPackages.length > 0) {
   console.error(
-    `\nProvenance check failed. npm publish with provenance requires every publishable package to declare repository.url === "${EXPECTED_REPOSITORY_URL}".\n`,
+    `\nProvenance check failed. npm publish with provenance requires every publishable package to declare repository.url === "${FORK_REPOSITORY_URL}".\n`,
   );
   for (const offendingPackage of offendingPackages) {
     console.error(

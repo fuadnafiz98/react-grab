@@ -4,6 +4,7 @@ import { detect } from "package-manager-detector/detect";
 import ignore from "ignore";
 import { hasReactGrabSetupCode } from "./react-grab-code.js";
 import { getReactGrabSetupFileCandidates } from "./react-grab-setup-files.js";
+import { REACT_GRAB_PACKAGE_NAME } from "./constants.js";
 
 export type PackageManager = "npm" | "yarn" | "pnpm" | "bun";
 export type Framework = "next" | "vite" | "tanstack" | "webpack" | "unknown";
@@ -373,7 +374,7 @@ const hasReactGrabSetupInFile = (filePath: string): boolean => {
 
 const detectReactGrabDependency = (projectRoot: string): boolean => {
   const dependencies = readMergedDependencies(projectRoot);
-  return Boolean(dependencies?.["react-grab"]);
+  return Boolean(dependencies?.[REACT_GRAB_PACKAGE_NAME] ?? dependencies?.["react-grab"]);
 };
 
 export const detectReactGrabConfigured = (projectRoot: string): boolean => {
@@ -394,7 +395,12 @@ export const detectUnsupportedFramework = (projectRoot: string): UnsupportedFram
 };
 
 const detectReactGrabVersion = (projectRoot: string): string | null => {
-  const installedPackageJsonPath = join(projectRoot, "node_modules", "react-grab", "package.json");
+  const installedPackageJsonPath = join(
+    projectRoot,
+    "node_modules",
+    REACT_GRAB_PACKAGE_NAME,
+    "package.json",
+  );
   if (existsSync(installedPackageJsonPath)) {
     try {
       const packageJson = JSON.parse(readFileSync(installedPackageJsonPath, "utf-8"));

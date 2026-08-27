@@ -1,4 +1,14 @@
-const REACT_GRAB_SPECIFIER_PATTERN = String.raw`react-grab(?:\/[^"']+)?`;
+import { REACT_GRAB_PACKAGE_NAME } from "./constants.js";
+import { escapeRegExp } from "./escape-reg-exp.js";
+
+export const REACT_GRAB_PACKAGE_PATTERN = [REACT_GRAB_PACKAGE_NAME, "react-grab"]
+  .filter(
+    (packageName, packageIndex, packageNames) => packageNames.indexOf(packageName) === packageIndex,
+  )
+  .map(escapeRegExp)
+  .join("|");
+
+export const REACT_GRAB_SPECIFIER_PATTERN = String.raw`(?:${REACT_GRAB_PACKAGE_PATTERN})(?:\/[^"']+)?`;
 
 const stripComments = (content: string): string =>
   content

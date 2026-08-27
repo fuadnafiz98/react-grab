@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import { x } from "tinyexec";
 import { detectPackageManager, type PackageManager } from "./detect.js";
 import { shouldUseCorepack } from "./should-use-corepack.js";
+import { REACT_GRAB_PACKAGE_NAME } from "./constants.js";
 
 export interface InstallPackageOptions {
   cwd?: string;
@@ -64,5 +65,5 @@ export const installPackages = async (
 };
 
 export const getPackagesToInstall = (includeReactGrab: boolean = true): string[] => {
-  return includeReactGrab ? ["react-grab"] : [];
+  return includeReactGrab ? [REACT_GRAB_PACKAGE_NAME] : [];
 };

@@ -1,7 +1,10 @@
-# <img src="https://github.com/aidenybai/react-grab/blob/main/.github/public/logo.png?raw=true" width="60" align="center" /> React Grab
+# <img src="https://github.com/fuadnafiz98/react-grab/blob/main/.github/public/logo.png?raw=true" width="60" align="center" /> React Grab Fork
 
-[![version](https://img.shields.io/npm/v/react-grab?style=flat&colorA=000000&colorB=000000)](https://npmjs.com/package/react-grab)
-[![downloads](https://img.shields.io/npm/dt/react-grab.svg?style=flat&colorA=000000&colorB=000000)](https://npmjs.com/package/react-grab)
+[![version](https://img.shields.io/npm/v/%40fuadnafiz98%2Freact-grab?style=flat&colorA=000000&colorB=000000)](https://npmjs.com/package/@fuadnafiz98/react-grab)
+[![downloads](https://img.shields.io/npm/dt/%40fuadnafiz98%2Freact-grab.svg?style=flat&colorA=000000&colorB=000000)](https://npmjs.com/package/@fuadnafiz98/react-grab)
+
+> [!IMPORTANT]
+> This is [Fuad Nafiz's fork](https://github.com/fuadnafiz98/react-grab) of the [original React Grab project](https://github.com/aidenybai/react-grab). This fork restores removed features and adds missing or experimental features. Fork-specific code stays isolated where possible so upstream updates can be merged with fewer conflicts.
 
 Copy any UI element for your agent.
 
@@ -14,7 +17,7 @@ React Grab points agents to the actual source behind each selection. Agents are 
 Run this at your project root:
 
 ```bash
-npx grab@latest init
+npx @fuadnafiz98/grab@latest init
 ```
 
 ## How It Works
@@ -48,7 +51,7 @@ export default function RootLayout({ children }) {
       <head>
         {process.env.NODE_ENV === "development" && (
           <Script
-            src="//unpkg.com/react-grab/dist/index.global.js"
+            src="//unpkg.com/@fuadnafiz98/react-grab/dist/index.global.js"
             crossOrigin="anonymous"
             strategy="beforeInteractive"
           />
@@ -66,6 +69,7 @@ Add this into your `pages/_document.tsx`:
 
 ```jsx
 import { Html, Head, Main, NextScript } from "next/document";
+import Script from "next/script";
 
 export default function Document() {
   return (
@@ -73,7 +77,7 @@ export default function Document() {
       <Head>
         {process.env.NODE_ENV === "development" && (
           <Script
-            src="//unpkg.com/react-grab/dist/index.global.js"
+            src="//unpkg.com/@fuadnafiz98/react-grab/dist/index.global.js"
             crossOrigin="anonymous"
             strategy="beforeInteractive"
           />
@@ -94,7 +98,7 @@ Add this at the top of your main entry file (e.g., `src/main.tsx`):
 
 ```tsx
 if (import.meta.env.DEV) {
-  import("react-grab");
+  import("@fuadnafiz98/react-grab");
 }
 ```
 
@@ -103,27 +107,27 @@ if (import.meta.env.DEV) {
 First, install React Grab:
 
 ```bash
-npm install react-grab
+npm install @fuadnafiz98/react-grab
 ```
 
 Then add this at the top of your main entry file (e.g., `src/index.tsx` or `src/main.tsx`):
 
 ```tsx
 if (process.env.NODE_ENV === "development") {
-  import("react-grab");
+  import("@fuadnafiz98/react-grab");
 }
 ```
 
 ## Build your own React Grab
 
-Build a custom interface with the selection engine from `react-grab/primitives`. Use its APIs for hit testing, source context, page freezing, clipboard access, and editor navigation.
+Build a custom interface with the selection engine from `@fuadnafiz98/react-grab/primitives`. Use its APIs for hit testing, source context, page freezing, clipboard access, and editor navigation.
 
 ### Customize hit testing
 
 Scope hit testing to a container or replace the default element filter with your own rules.
 
 ```typescript
-import { getElementAtPoint, isElementGrabbable } from "react-grab/primitives";
+import { getElementAtPoint, isElementGrabbable } from "@fuadnafiz98/react-grab/primitives";
 
 export const getPickerTarget = (
   event: PointerEvent,
@@ -142,15 +146,15 @@ Add `data-react-grab-ignore` to your picker interface so hit testing skips its s
 
 Want to try it out? Check out [our demo](https://react-grab.com).
 
-Looking to contribute back? Check out the [Contributing Guide](https://github.com/aidenybai/react-grab/blob/main/CONTRIBUTING.md).
+Looking to contribute to this fork? Check out the [Contributing Guide](https://github.com/fuadnafiz98/react-grab/blob/main/CONTRIBUTING.md).
 
 Want to talk to the community? Hop in our [Discord](https://discord.com/invite/G7zxfUzkm7) and share your ideas and what you've built with React Grab.
 
-Find a bug? Head over to our [issue tracker](https://github.com/aidenybai/react-grab/issues) and we'll do our best to help. We love pull requests, too!
+Find a fork-specific bug? Use the [fork issue tracker](https://github.com/fuadnafiz98/react-grab/issues). Report upstream regressions to the [original project](https://github.com/aidenybai/react-grab/issues).
 
-We expect all contributors to abide by the terms of our [Code of Conduct](https://github.com/aidenybai/react-grab/blob/main/.github/CODE_OF_CONDUCT.md).
+We expect all contributors to abide by the terms of our [Code of Conduct](https://github.com/fuadnafiz98/react-grab/blob/main/.github/CODE_OF_CONDUCT.md).
 
-[**Start contributing on GitHub**](https://github.com/aidenybai/react-grab/blob/main/CONTRIBUTING.md)
+[**Start contributing on GitHub**](https://github.com/fuadnafiz98/react-grab/blob/main/CONTRIBUTING.md)
 
 ### License
 

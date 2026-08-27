@@ -1,4 +1,5 @@
 node_modules
+.fork-release
 .turbo
 .DS_Store
 .env

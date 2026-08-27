@@ -40,6 +40,7 @@ export type {
   PluginHooks,
   SelectedElementPayload,
   ElementSelectedEventDetail,
+  CopySuccessContext,
 } from "./types.js";
 
 import { init } from "./core/index.js";

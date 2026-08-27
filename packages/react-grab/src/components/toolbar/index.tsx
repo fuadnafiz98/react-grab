@@ -35,6 +35,7 @@ import {
 } from "../../utils/toolbar-position.js";
 import { createToolbarDrag } from "../../utils/create-toolbar-drag.js";
 import { accumulateRotationDeg } from "../../utils/accumulate-rotation.js";
+import { CommentHistoryToolbar } from "../../fork/comment-history/comment-history-toolbar.js";
 
 interface ToolbarProps {
   isActive?: boolean;
@@ -721,35 +722,48 @@ export const Toolbar: Component<ToolbarProps> = (props) => {
           }
         }}
         actionButtons={
-          <ToolbarActionButton
-            actionId={currentActionId()}
-            isToggle
-            ref={(element) => (selectButtonRef = element)}
-            label={
-              isCurrentActionActive() ? "Stop selecting element" : `${currentActionLabel()} element`
-            }
-            isActive={isCurrentActionActive()}
-            class={actionButtonClass}
-            wrapperClass={actionButtonWrapperClass()}
-            onClick={handleToggle}
-            onContextMenu={(event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              setHoveredActionId(null);
-              props.onToggleToolbarMenu?.();
-            }}
-            {...createFreezeHandlers(currentActionId)}
-            icon={
-              <IconSelect
-                size={14}
-                rotationDeg={selectIconRotationDeg()}
-                class={actionIconClass(isCurrentActionActive())}
-              />
-            }
-            tooltipVisible={isTooltipVisible(currentActionId())}
-            tooltipPosition={tooltipPosition()}
-            tooltip={currentActionLabel()}
-          />
+          <>
+            <ToolbarActionButton
+              actionId={currentActionId()}
+              isToggle
+              ref={(element) => (selectButtonRef = element)}
+              label={
+                isCurrentActionActive()
+                  ? "Stop selecting element"
+                  : `${currentActionLabel()} element`
+              }
+              isActive={isCurrentActionActive()}
+              class={actionButtonClass}
+              wrapperClass={actionButtonWrapperClass()}
+              onClick={handleToggle}
+              onContextMenu={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                setHoveredActionId(null);
+                props.onToggleToolbarMenu?.();
+              }}
+              {...createFreezeHandlers(currentActionId)}
+              icon={
+                <IconSelect
+                  size={14}
+                  rotationDeg={selectIconRotationDeg()}
+                  class={actionIconClass(isCurrentActionActive())}
+                />
+              }
+              tooltipVisible={isTooltipVisible(currentActionId())}
+              tooltipPosition={tooltipPosition()}
+              tooltip={currentActionLabel()}
+            />
+            <CommentHistoryToolbar
+              edge={snapEdge()}
+              buttonClass={actionButtonClass}
+              wrapperClass={actionButtonWrapperClass()}
+              iconClass={actionIconClass(false)}
+              tooltipPosition={tooltipPosition()}
+              createDragAwareHandler={drag.createDragAwareHandler}
+              {...createFreezeHandlers(() => "comment-history")}
+            />
+          </>
         }
       />
     </div>

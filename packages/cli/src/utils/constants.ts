@@ -1,6 +1,7 @@
 export const MAX_SUGGESTIONS_COUNT = 30;
 export const MAX_KEY_HOLD_DURATION_MS = 2000;
 export const MAX_CONTEXT_LINES = 50;
+export const REACT_GRAB_PACKAGE_NAME = process.env.REACT_GRAB_PACKAGE_NAME ?? "react-grab";
 
 export const DEFAULT_WATCH_DIR = ".react-grab";
 export const DEFAULT_WATCH_INTERVAL_MS = 800;

@@ -23,15 +23,24 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Build fork CLI
+        run: pnpm build:fork-cli
+
+      - name: Prepare fork packages
+        run: pnpm prepare:fork-release
+
+      - name: Verify package provenance
+        run: pnpm check:provenance
+
       - name: Publish packages (retry on transient failures)
         run: |
           max_attempts=4
           attempt=1
           while [ "$attempt" -le "$max_attempts" ]; do
             if pnpm dlx pkg-pr-new publish \
-              ./packages/react-grab \
-              ./packages/cli \
-              ./packages/grab; then
+              ./.fork-release/react-grab \
+              ./.fork-release/react-grab-cli \
+              ./.fork-release/grab; then
               exit 0
             fi
 

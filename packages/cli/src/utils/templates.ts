@@ -1,22 +1,24 @@
+import { REACT_GRAB_PACKAGE_NAME } from "./constants.js";
+
 export const NEXT_APP_ROUTER_SCRIPT = `{process.env.NODE_ENV === "development" && (
           <Script
-            src="//unpkg.com/react-grab/dist/index.global.js"
+            src="//unpkg.com/${REACT_GRAB_PACKAGE_NAME}/dist/index.global.js"
             crossOrigin="anonymous"
             strategy="beforeInteractive"
           />
         )}`;
 
 export const VITE_IMPORT = `if (import.meta.env.DEV) {
-  import("react-grab");
+  import("${REACT_GRAB_PACKAGE_NAME}");
 }`;
 
 export const WEBPACK_IMPORT = `if (process.env.NODE_ENV === "development") {
-  import("react-grab");
+  import("${REACT_GRAB_PACKAGE_NAME}");
 }`;
 
 export const TANSTACK_EFFECT = `useEffect(() => {
     if (import.meta.env.DEV) {
-      void import("react-grab");
+      void import("${REACT_GRAB_PACKAGE_NAME}");
     }
   }, []);`;
 

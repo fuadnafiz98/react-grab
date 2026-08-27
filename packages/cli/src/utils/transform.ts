@@ -7,7 +7,12 @@ import {
   VITE_IMPORT,
   WEBPACK_IMPORT,
 } from "./templates.js";
-import { hasReactGrabSetupCode } from "./react-grab-code.js";
+import {
+  hasReactGrabSetupCode,
+  REACT_GRAB_PACKAGE_PATTERN,
+  REACT_GRAB_SPECIFIER_PATTERN,
+} from "./react-grab-code.js";
+import { REACT_GRAB_PACKAGE_NAME } from "./constants.js";
 import {
   findDocumentFile,
   findEntryFile,
@@ -147,7 +152,7 @@ const transformNextPagesRouter = (
         "      <Html>\n" +
         "        <Head>\n" +
         '          {process.env.NODE_ENV === "development" && (\n' +
-        '            <Script src="//unpkg.com/react-grab/dist/index.global.js" strategy="beforeInteractive" />\n' +
+        `            <Script src="//unpkg.com/${REACT_GRAB_PACKAGE_NAME}/dist/index.global.js" strategy="beforeInteractive" />\n` +
         "          )}\n" +
         "        </Head>\n" +
         "        <body>\n" +
@@ -301,7 +306,7 @@ const transformTanStack = (
         '  import { useEffect } from "react";\n\n' +
         "  useEffect(() => {\n" +
         "    if (import.meta.env.DEV) {\n" +
-        '      void import("react-grab");\n' +
+        `      void import("${REACT_GRAB_PACKAGE_NAME}");\n` +
         "    }\n" +
         "  }, []);",
     };
@@ -559,7 +564,7 @@ const addOptionsToNextScript = (
   filePath: string,
 ): TransformResult => {
   const reactGrabScriptMatch = originalContent.match(
-    /(<Script[\s\S]*?react-grab[\s\S]*?)\s*(\/?>)/i,
+    new RegExp(`(<Script[\\s\\S]*?(?:${REACT_GRAB_PACKAGE_PATTERN})[\\s\\S]*?)\\s*(/?>)`, "i"),
   );
 
   if (!reactGrabScriptMatch) {
@@ -602,7 +607,9 @@ const addOptionsToDynamicImport = (
   filePath: string,
 ): TransformResult => {
   const reactGrabImportWithInitMatch = originalContent.match(
-    /(void\s+)?import\s*\(\s*["']react-grab(?:\/[^"']+)?["']\s*\)(?:\.then\s*\(\s*(?:\(m\)\s*=>\s*m\.init\s*\([^)]*\)|\(\{\s*init\s*\}\)\s*=>\s*init\s*\([^)]*\))\s*\))?/,
+    new RegExp(
+      String.raw`(void\s+)?import\s*\(\s*["']${REACT_GRAB_SPECIFIER_PATTERN}["']\s*\)(?:\.then\s*\(\s*(?:\(m\)\s*=>\s*m\.init\s*\([^)]*\)|\(\{\s*init\s*\}\)\s*=>\s*init\s*\([^)]*\))\s*\))?`,
+    ),
   );
 
   if (!reactGrabImportWithInitMatch) {
@@ -615,7 +622,7 @@ const addOptionsToDynamicImport = (
 
   const optionsJson = formatOptionsAsJson(options);
   const voidPrefix = reactGrabImportWithInitMatch[1] ?? "";
-  const newImport = `${voidPrefix}import("react-grab").then((m) => m.init(${optionsJson}))`;
+  const newImport = `${voidPrefix}import("${REACT_GRAB_PACKAGE_NAME}").then((m) => m.init(${optionsJson}))`;
 
   const newContent = originalContent.replace(reactGrabImportWithInitMatch[0], newImport);
 
@@ -634,7 +641,9 @@ const addOptionsToTanStackImport = (
   filePath: string,
 ): TransformResult => {
   const reactGrabImportWithInitMatch = originalContent.match(
-    /(?:(void\s+)?import\s*\(\s*["']react-grab\/core["']\s*\)\.then\s*\(\s*(?:\(\s*\{\s*init\s*\}\s*\)\s*=>\s*init\s*\([^)]*\)|\(m\)\s*=>\s*m\.init\s*\([^)]*\))\s*\)|(void\s+)?import\s*\(\s*["']react-grab(?!\/core)(?:\/[^"']+)?["']\s*\))/,
+    new RegExp(
+      String.raw`(?:(void\s+)?import\s*\(\s*["'](?:${REACT_GRAB_PACKAGE_PATTERN})\/core["']\s*\)\.then\s*\(\s*(?:\(\s*\{\s*init\s*\}\s*\)\s*=>\s*init\s*\([^)]*\)|\(m\)\s*=>\s*m\.init\s*\([^)]*\))\s*\)|(void\s+)?import\s*\(\s*["'](?:${REACT_GRAB_PACKAGE_PATTERN})(?!\/core)(?:\/[^"']+)?["']\s*\))`,
+    ),
   );
 
   if (!reactGrabImportWithInitMatch) {
@@ -647,7 +656,7 @@ const addOptionsToTanStackImport = (
 
   const optionsJson = formatOptionsAsJson(options);
   const voidPrefix = reactGrabImportWithInitMatch[1] ?? reactGrabImportWithInitMatch[2] ?? "";
-  const newImport = `${voidPrefix}import("react-grab/core").then(({ init }) => init(${optionsJson}))`;
+  const newImport = `${voidPrefix}import("${REACT_GRAB_PACKAGE_NAME}/core").then(({ init }) => init(${optionsJson}))`;
 
   const newContent = originalContent.replace(reactGrabImportWithInitMatch[0], newImport);
 
@@ -732,8 +741,12 @@ export const previewCdnTransform = (
     };
   }
   const originalContent = readFileSync(filePath, "utf-8");
+  const packageCdnPattern = new RegExp(
+    String.raw`(https?:)?\/\/[^/\s"']+(?=\/(?:${REACT_GRAB_PACKAGE_PATTERN})(?:\/|["']))`,
+    "g",
+  );
   const newContent = originalContent
-    .replace(/(https?:)?\/\/[^/\s"']+(?=\/(?:@?react-grab))/g, `//${targetCdnDomain}`)
+    .replace(packageCdnPattern, `//${targetCdnDomain}`)
     .replace(
       /(https?:)?\/\/[^/\s"']*react-grab[^/\s"']*\.com(?=\/script\.js)/g,
       `//${targetCdnDomain}`,

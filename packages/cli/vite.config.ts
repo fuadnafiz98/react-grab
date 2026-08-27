@@ -17,6 +17,9 @@ export default defineConfig({
     banner: "#!/usr/bin/env node",
     define: {
       "process.env.VERSION": JSON.stringify(process.env.VERSION ?? packageJson.version),
+      "process.env.REACT_GRAB_PACKAGE_NAME": JSON.stringify(
+        process.env.REACT_GRAB_PACKAGE_NAME ?? "react-grab",
+      ),
     },
     deps: {
       alwaysBundle: [/^zod/],

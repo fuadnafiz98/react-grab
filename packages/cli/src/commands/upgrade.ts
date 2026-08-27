@@ -8,9 +8,10 @@ import { highlighter } from "../utils/highlighter.js";
 import { installPackages } from "../utils/install.js";
 import { logger } from "../utils/logger.js";
 import { spinner } from "../utils/spinner.js";
+import { REACT_GRAB_PACKAGE_NAME } from "../utils/constants.js";
 
 const VERSION = process.env.VERSION ?? "0.0.1";
-const NPM_REGISTRY_URL = "https://registry.npmjs.org/react-grab/latest";
+const NPM_REGISTRY_URL = `https://registry.npmjs.org/${encodeURIComponent(REACT_GRAB_PACKAGE_NAME)}/latest`;
 
 interface NpmPackageInfo {
   version: string;
@@ -31,8 +32,16 @@ const isDevDependency = (projectRoot: string): boolean => {
   if (!existsSync(packageJsonPath)) return true;
   try {
     const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
-    if (packageJson.devDependencies?.["react-grab"]) return true;
-    if (packageJson.dependencies?.["react-grab"]) return false;
+    if (
+      packageJson.devDependencies?.[REACT_GRAB_PACKAGE_NAME] ||
+      packageJson.devDependencies?.["react-grab"]
+    )
+      return true;
+    if (
+      packageJson.dependencies?.[REACT_GRAB_PACKAGE_NAME] ||
+      packageJson.dependencies?.["react-grab"]
+    )
+      return false;
   } catch {}
   return true;
 };
@@ -93,7 +102,7 @@ export const upgrade = new Command()
       const upgradeSpinner = spinner("Upgrading react-grab.").start();
 
       try {
-        await installPackages(["react-grab@latest"], {
+        await installPackages([`${REACT_GRAB_PACKAGE_NAME}@latest`], {
           packageManager: projectInfo.packageManager,
           cwd: projectInfo.projectRoot,
           isDev: isDevDependency(projectInfo.projectRoot),

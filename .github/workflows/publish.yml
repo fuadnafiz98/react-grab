@@ -28,6 +28,7 @@ jobs:
         with:
           node-version: 22.18.0
           cache: pnpm
+          registry-url: https://registry.npmjs.org
 
       - run: npm install -g npm@11
 
@@ -43,6 +44,7 @@ jobs:
           commit: "chore: version packages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
 
   publish-dev:
@@ -90,17 +92,22 @@ jobs:
           VERSION: ${{ steps.dev-version.outputs.version }}
         run: pnpm build
 
+      - name: Build fork CLI
+        env:
+          VERSION: ${{ steps.dev-version.outputs.version }}
+        run: pnpm build:fork-cli
+
+      - name: Prepare fork packages
+        env:
+          FORK_VERSION: ${{ steps.dev-version.outputs.version }}
+        run: pnpm prepare:fork-release
+
+      - name: Verify package provenance
+        run: pnpm check:provenance
+
       - name: Publish to npm under the dev tag
         env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
-        run: |
-          for attempt in 1 2 3; do
-            if pnpm publish --recursive --tag dev --no-git-checks --access public; then
-              exit 0
-            fi
-            backoff_seconds=$((attempt * 15))
-            echo "Dev publish attempt ${attempt} failed; retrying in ${backoff_seconds}s (already-published versions are skipped by pnpm)"
-            sleep "${backoff_seconds}"
-          done
-          echo "Dev publish failed after 3 attempts"
-          exit 1
+          NPM_DIST_TAG: dev
+        run: node scripts/publish-fork-release.mjs

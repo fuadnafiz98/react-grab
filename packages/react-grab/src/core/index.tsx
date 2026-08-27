@@ -150,6 +150,7 @@ import { createModifierTracker } from "../utils/modifier-tracker.js";
 import { copyPlugin } from "./plugins/copy.js";
 import { commentPlugin } from "./plugins/comment.js";
 import { openPlugin } from "./plugins/open.js";
+import { commentHistoryPlugin } from "../fork/comment-history/comment-history-plugin.js";
 import { freezeAnimations, freezeAllAnimations } from "../utils/freeze-animations.js";
 import {
   freezeGlobalInteractions,
@@ -171,7 +172,7 @@ import { clearGlobalApi } from "../global-api.js";
 import { collectCleanupError } from "../utils/collect-cleanup-error.js";
 import { throwCollectedErrors } from "../utils/throw-collected-errors.js";
 
-const builtInPlugins = [copyPlugin, commentPlugin, openPlugin];
+const builtInPlugins = [copyPlugin, commentPlugin, openPlugin, commentHistoryPlugin];
 
 interface CopyWithLabelOptions {
   element: Element;
