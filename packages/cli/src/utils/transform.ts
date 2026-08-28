@@ -576,7 +576,10 @@ const addOptionsToNextScript = (
   }
 
   const scriptTag = reactGrabScriptMatch[0];
-  const scriptOpening = reactGrabScriptMatch[1];
+  const scriptOpening = reactGrabScriptMatch[1].replace(
+    "unpkg.com/react-grab/",
+    `unpkg.com/${REACT_GRAB_PACKAGE_NAME}/`,
+  );
   const scriptClosing = reactGrabScriptMatch[2];
 
   const existingDataOptionsMatch = scriptTag.match(/data-options=\{JSON\.stringify\([^)]+\)\}/);
