@@ -1,5 +1,11 @@
 # @react-grab/cli
 
+## Fork 0.1.0
+
+### Patch Changes
+
+- Start the independent fork release line for the scoped installer CLI.
+
 ## 0.3.0
 
 ## 0.2.0

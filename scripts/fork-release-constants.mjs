@@ -5,3 +5,8 @@ export const FORK_RELEASE_DIRECTORY_NAME = ".fork-release";
 export const FORK_REACT_GRAB_PACKAGE_NAME = `${FORK_NPM_SCOPE}/react-grab`;
 export const FORK_CLI_PACKAGE_NAME = `${FORK_NPM_SCOPE}/react-grab-cli`;
 export const FORK_GRAB_PACKAGE_NAME = `${FORK_NPM_SCOPE}/grab`;
+export const FORK_PACKAGE_NAMES = [
+  FORK_REACT_GRAB_PACKAGE_NAME,
+  FORK_CLI_PACKAGE_NAME,
+  FORK_GRAB_PACKAGE_NAME,
+];

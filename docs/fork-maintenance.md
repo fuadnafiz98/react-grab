@@ -2,6 +2,12 @@
 
 This repository tracks the original React Grab project and publishes fork packages under the `@fuadnafiz98` npm scope.
 
+## Fork version line
+
+The fork's public release line starts at `0.1.0`. The earlier `0.3.0` publication remains available because npm versions are immutable, but it is not the fork's active release line.
+
+The version command checks all scoped fork packages before it creates a release pull request. If npm already contains the generated version, the command advances to the next available patch version and updates the package changelogs. This prevents the historical `0.3.0` publication from blocking a future release.
+
 ## Upstream updates
 
 Configure the original repository once:

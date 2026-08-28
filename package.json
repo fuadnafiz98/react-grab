@@ -22,7 +22,7 @@
     "extension:dev": "pnpm --filter @react-grab/web-extension dev",
     "extension:build": "pnpm --filter @react-grab/web-extension build",
     "changeset": "changeset",
-    "version": "changeset version",
+    "version": "changeset version && node scripts/ensure-unpublished-fork-version.mjs",
     "build:fork-cli": "REACT_GRAB_PACKAGE_NAME=@fuadnafiz98/react-grab pnpm --filter @react-grab/cli build",
     "prepare:fork-release": "node scripts/prepare-fork-release.mjs",
     "check:provenance": "node scripts/check-publish-provenance.mjs",

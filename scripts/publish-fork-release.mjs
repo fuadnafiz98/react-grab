@@ -6,6 +6,8 @@ import { FORK_RELEASE_DIRECTORY_NAME } from "./fork-release-constants.mjs";
 
 const MAX_PUBLISH_ATTEMPTS = 3;
 const PUBLISH_RETRY_BASE_DELAY_MS = 15_000;
+const MAX_REGISTRY_VISIBILITY_ATTEMPTS = 12;
+const REGISTRY_VISIBILITY_RETRY_DELAY_MS = 5_000;
 const releaseDirectoryNames = ["react-grab-cli", "react-grab", "grab"];
 const rootDirectory = join(dirname(fileURLToPath(import.meta.url)), "..");
 const releaseRootDirectory = join(rootDirectory, FORK_RELEASE_DIRECTORY_NAME);
@@ -43,6 +45,19 @@ const publishPackage = async (releaseDirectory, packageName, version) => {
   }
 };
 
+const waitForPackageVersion = async (packageName, version) => {
+  for (let attempt = 1; attempt <= MAX_REGISTRY_VISIBILITY_ATTEMPTS; attempt += 1) {
+    if (isPackageVersionPublished(packageName, version)) return;
+    if (attempt === MAX_REGISTRY_VISIBILITY_ATTEMPTS) {
+      throw new Error(`npm did not expose ${packageName}@${version} after publishing`);
+    }
+    console.log(
+      `Waiting for npm to expose ${packageName}@${version} (${attempt}/${MAX_REGISTRY_VISIBILITY_ATTEMPTS})`,
+    );
+    await sleep(REGISTRY_VISIBILITY_RETRY_DELAY_MS);
+  }
+};
+
 for (const releaseDirectoryName of releaseDirectoryNames) {
   const releaseDirectory = join(releaseRootDirectory, releaseDirectoryName);
   const manifest = JSON.parse(readFileSync(join(releaseDirectory, "package.json"), "utf8"));
@@ -51,5 +66,6 @@ for (const releaseDirectoryName of releaseDirectoryNames) {
     continue;
   }
   await publishPackage(releaseDirectory, manifest.name, manifest.version);
+  await waitForPackageVersion(manifest.name, manifest.version);
   console.log(`New tag: ${manifest.name}@${manifest.version}`);
 }
