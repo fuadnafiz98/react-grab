@@ -48,6 +48,16 @@ const rewriteInternalDependencies = (dependencies, version) => {
   return rewrittenDependencies;
 };
 
+const normalizeBinPaths = (bin) => {
+  if (!bin || typeof bin === "string") return bin;
+  return Object.fromEntries(
+    Object.entries(bin).map(([commandName, commandPath]) => [
+      commandName,
+      commandPath.replace(/^\.\//, ""),
+    ]),
+  );
+};
+
 const rewriteCliBinImport = (releaseDirectory) => {
   const binPath = join(releaseDirectory, "bin", "cli.js");
   if (!existsSync(binPath)) return;
@@ -82,6 +92,7 @@ for (const configuration of packageConfigurations) {
     homepage: FORK_REPOSITORY_WEB_URL,
     bugs: { url: `${FORK_REPOSITORY_WEB_URL}/issues` },
     repository: { type: "git", url: FORK_REPOSITORY_URL },
+    bin: normalizeBinPaths(sourceManifest.bin),
     dependencies: rewriteInternalDependencies(sourceManifest.dependencies, version),
   };
 

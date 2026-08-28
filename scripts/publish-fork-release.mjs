@@ -47,9 +47,12 @@ const publishPackage = async (releaseDirectory, packageName, version) => {
 
 const waitForPackageVersion = async (packageName, version) => {
   for (let attempt = 1; attempt <= MAX_REGISTRY_VISIBILITY_ATTEMPTS; attempt += 1) {
-    if (isPackageVersionPublished(packageName, version)) return;
+    if (isPackageVersionPublished(packageName, version)) return true;
     if (attempt === MAX_REGISTRY_VISIBILITY_ATTEMPTS) {
-      throw new Error(`npm did not expose ${packageName}@${version} after publishing`);
+      console.warn(
+        `npm has not exposed ${packageName}@${version} yet; publication succeeded and registry processing is still pending`,
+      );
+      return false;
     }
     console.log(
       `Waiting for npm to expose ${packageName}@${version} (${attempt}/${MAX_REGISTRY_VISIBILITY_ATTEMPTS})`,
@@ -66,6 +69,10 @@ for (const releaseDirectoryName of releaseDirectoryNames) {
     continue;
   }
   await publishPackage(releaseDirectory, manifest.name, manifest.version);
-  await waitForPackageVersion(manifest.name, manifest.version);
-  console.log(`New tag: ${manifest.name}@${manifest.version}`);
+  const isVisible = await waitForPackageVersion(manifest.name, manifest.version);
+  console.log(
+    isVisible
+      ? `New tag: ${manifest.name}@${manifest.version}`
+      : `Published: ${manifest.name}@${manifest.version} (registry visibility pending)`,
+  );
 }
