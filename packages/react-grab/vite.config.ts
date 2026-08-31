@@ -52,6 +52,34 @@ const createSolidBabelPlugin = () =>
     plugins: shouldInstrumentSolidSources ? [solidSourceLocationBabelPlugin] : [],
   });
 
+// bippy's `useFiber` hook imports React, and React is bippy's peer dependency, so
+// the standalone browser build ends up invoking its own IIFE with an undefined
+// `react` global and dies on load with "react is not defined". react-grab never
+// calls `useFiber`, and a dev overlay must not ship a second copy of React, so the
+// browser build resolves the import to a stub instead. The module builds keep React
+// a real external -- an npm consumer has their own.
+const REACT_STUB_ID = "\0react-grab:react-stub";
+
+// bippy reads `useSyncExternalStore` off the namespace at module scope, so the stub
+// has to import without throwing; every binding is only ever called from `useFiber`.
+const REACT_STUB_SOURCE = `export const useRef = undefined;
+export const useEffect = undefined;
+export const useReducer = undefined;
+export const useSyncExternalStore = undefined;
+export default {};
+`;
+
+const reactStubPlugin = () => ({
+  name: "react-stub",
+  enforce: "pre" as const,
+  resolveId(source: string) {
+    if (source === "react") return REACT_STUB_ID;
+  },
+  load(id: string) {
+    if (id === REACT_STUB_ID) return REACT_STUB_SOURCE;
+  },
+});
+
 // Fresh plugin instances per pack; the two shapes (browser IIFE global, neutral
 // cjs/esm module) share everything except entry/format/output, so they're built
 // from these factories to avoid lockstep edits across the four packs.
@@ -69,8 +97,15 @@ const makeIifePack = (entry: string, globalName: string, isDemo: boolean): PackU
     entryFileNames: "[name].global.js",
   },
   define: createDefine(isDemo),
-  deps: { alwaysBundle },
-  plugins: [solidWebBrowserPlugin(), cssTextPlugin(), createSolidBabelPlugin()],
+  // React has to leave the external list as well as gain a stub: it is a peer
+  // dependency, and peers are externalised before any plugin gets to resolve them.
+  deps: { alwaysBundle: [...alwaysBundle, /^react$/] },
+  plugins: [
+    reactStubPlugin(),
+    solidWebBrowserPlugin(),
+    cssTextPlugin(),
+    createSolidBabelPlugin(),
+  ],
 });
 
 const makeModulePack = (entry: string[], isDemo: boolean): PackUserConfig => ({
