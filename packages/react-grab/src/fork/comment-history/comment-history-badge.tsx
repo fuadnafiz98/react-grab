@@ -107,7 +107,7 @@ export const CommentHistoryBadge: Component<CommentHistoryBadgeProps> = (props) 
           data-react-grab-comment-history-badge
           aria-label={`Open comments (${items().length})`}
           type="button"
-          class="absolute -right-1.5 -top-1.5 z-1 flex h-3.5 min-w-3.5 cursor-pointer items-center justify-center rounded-full bg-[var(--rg-text-primary)] px-0.5 text-[9px] leading-none font-medium text-[var(--rg-panel-bg)] interactive-scale"
+          class="absolute -right-1 -top-1 z-1 flex h-2.5 min-w-2.5 cursor-pointer items-center justify-center rounded-full bg-[var(--rg-text-primary)] px-0.5 text-[8px] leading-none font-semibold text-[var(--rg-panel-bg)] tabular-nums interactive-scale"
           onClick={handleToggle}
           onMouseEnter={props.onMouseEnter}
           onMouseLeave={props.onMouseLeave}
