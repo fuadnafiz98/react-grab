@@ -597,6 +597,7 @@ export const init = (rawOptions?: Options): ReactGrabAPI => {
     let selectionSourceRequestVersion = 0;
     let componentNameDebounceTimerId: number | null = null;
     let pendingDefaultActionId: string | null = null;
+    let isPersistentCommentMode = false;
     const [isPendingContextMenuSelect, setIsPendingContextMenuSelect] = createSignal(false);
     const [pendingToolbarActionId, setPendingToolbarActionId] = createSignal<string | null>(null);
     const [debouncedElementForComponentName, setDebouncedElementForComponentName] =
@@ -1725,6 +1726,7 @@ export const init = (rawOptions?: Options): ReactGrabAPI => {
 
     const deactivateRenderer = () => {
       cancelPendingCopies();
+      isPersistentCommentMode = false;
       const wasDragging = isDragging();
       const previousFocused = store.previouslyFocusedElement;
       stopSpaceDragRepositioning();
@@ -1798,13 +1800,17 @@ export const init = (rawOptions?: Options): ReactGrabAPI => {
       actions.setPointer({ x: currentX, y: currentY });
       actions.exitPromptMode();
       actions.clearInputText();
+      if (isPersistentCommentMode) {
+        actions.setPendingCommentMode(true);
+        actions.setWasActivatedByToggle(false);
+      }
 
       performCopyWithLabel({
         element,
         cursorX: labelPositionX,
         selectedElements: elements,
         extraPrompt: prompt || undefined,
-        shouldDeactivateAfter: true,
+        shouldDeactivateAfter: !isPersistentCommentMode,
       });
     };
 
@@ -1883,6 +1889,7 @@ export const init = (rawOptions?: Options): ReactGrabAPI => {
         // the pending action in place instead of tearing down selection mode;
         // clicking the already-active action toggles selection off.
         if (toolbarActiveActionId() !== actionId) {
+          isPersistentCommentMode = actionId === COMMENT_ACTION_ID;
           if (isPromptMode()) {
             if (runActionForCurrentSelection(actionId)) return;
             deactivateRenderer();
@@ -1896,6 +1903,7 @@ export const init = (rawOptions?: Options): ReactGrabAPI => {
         return;
       }
       if (!isEnabled()) return;
+      isPersistentCommentMode = actionId === COMMENT_ACTION_ID;
       setPendingToolbarSelection(actionId);
       toggleActivate();
     };
@@ -1944,6 +1952,7 @@ export const init = (rawOptions?: Options): ReactGrabAPI => {
       }
 
       actions.setPendingCommentMode(true);
+      isPersistentCommentMode = true;
       if (!isActivated()) {
         toggleActivate();
       }

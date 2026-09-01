@@ -13,11 +13,9 @@ const addComment = async (
 };
 
 const openCommentHistory = async (reactGrab: ReactGrabPageObject): Promise<void> => {
-  const historyButton = reactGrab.page.locator(
-    "[data-react-grab-toolbar-action='comment-history']",
-  );
-  await expect(historyButton).toBeVisible();
-  await historyButton.click();
+  const historyBadge = reactGrab.page.locator("[data-react-grab-comment-history-badge]");
+  await expect(historyBadge).toBeVisible();
+  await historyBadge.click();
   await expect(reactGrab.page.locator("[data-react-grab-comment-history]")).toBeVisible();
 };
 
@@ -33,6 +31,7 @@ test.describe("Comment history", () => {
       "[data-react-grab-comment-history] [data-react-grab-comment-history-item]",
     );
     await expect(commentItems).toHaveCount(2);
+    await expect(reactGrab.page.locator("[data-react-grab-comment-history-badge]")).toHaveText("2");
 
     await reactGrab.page.locator("[data-react-grab-comment-history-copy-all]").click();
 
@@ -58,9 +57,7 @@ test.describe("Comment history", () => {
     await expect(commentItems).toHaveCount(1);
 
     await reactGrab.page.locator("[data-react-grab-comment-history-clear]").click();
-    await expect(
-      reactGrab.page.locator("[data-react-grab-toolbar-action='comment-history']"),
-    ).toHaveCount(0);
+    await expect(reactGrab.page.locator("[data-react-grab-comment-history-badge]")).toHaveCount(0);
   });
 
   test("restores saved comments after a page reload", async ({ reactGrab }) => {

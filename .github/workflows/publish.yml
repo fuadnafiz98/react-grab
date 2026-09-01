@@ -75,7 +75,8 @@ jobs:
         id: dev-version
         run: |
           base_version="$(node -p "require('./packages/react-grab/package.json').version")"
-          dev_version="${base_version}-dev.$(git rev-parse --short HEAD)"
+          next_patch_version="$(node -e "const [major, minor, patch] = process.argv[1].split('.').map(Number); process.stdout.write([major, minor, patch + 1].join('.'));" "$base_version")"
+          dev_version="${next_patch_version}-dev.$(git rev-parse --short HEAD)"
           echo "version=${dev_version}" >> "$GITHUB_OUTPUT"
           echo "Publishing dev snapshot ${dev_version}"
 

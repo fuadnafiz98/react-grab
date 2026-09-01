@@ -14,6 +14,7 @@ interface ToolbarActionButtonProps {
   onMouseEnter?: (event: MouseEvent) => void;
   onMouseLeave?: (event: MouseEvent) => void;
   icon: JSX.Element;
+  badge?: JSX.Element;
   tooltip?: string;
   tooltipVisible?: boolean;
   tooltipPosition?: "top" | "bottom" | "left" | "right";
@@ -37,6 +38,7 @@ export const ToolbarActionButton: Component<ToolbarActionButtonProps> = (props) 
     >
       {props.icon}
     </button>
+    {props.badge}
     <Show when={props.tooltip}>
       {(tooltip) => (
         <Tooltip

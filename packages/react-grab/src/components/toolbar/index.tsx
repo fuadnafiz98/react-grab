@@ -37,7 +37,7 @@ import {
 } from "../../utils/toolbar-position.js";
 import { createToolbarDrag } from "../../utils/create-toolbar-drag.js";
 import { accumulateRotationDeg } from "../../utils/accumulate-rotation.js";
-import { CommentHistoryToolbar } from "../../fork/comment-history/comment-history-toolbar.js";
+import { CommentHistoryBadge } from "../../fork/comment-history/comment-history-badge.js";
 
 interface ToolbarProps {
   isActive?: boolean;
@@ -769,18 +769,16 @@ export const Toolbar: Component<ToolbarProps> = (props) => {
               icon={
                 <IconComment size={14} class={actionIconClass(isActionActive(COMMENT_ACTION_ID))} />
               }
+              badge={
+                <CommentHistoryBadge
+                  edge={snapEdge()}
+                  createDragAwareHandler={drag.createDragAwareHandler}
+                  {...createFreezeHandlers(() => "comment-history")}
+                />
+              }
               tooltipVisible={isTooltipVisible(COMMENT_ACTION_ID)}
               tooltipPosition={tooltipPosition()}
               tooltip="Comment"
-            />
-            <CommentHistoryToolbar
-              edge={snapEdge()}
-              buttonClass={actionButtonClass}
-              wrapperClass={actionButtonWrapperClass()}
-              iconClass={actionIconClass(false)}
-              tooltipPosition={tooltipPosition()}
-              createDragAwareHandler={drag.createDragAwareHandler}
-              {...createFreezeHandlers(() => "comment-history")}
             />
           </>
         }

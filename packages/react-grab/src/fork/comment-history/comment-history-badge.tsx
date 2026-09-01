@@ -3,30 +3,22 @@ import { Show, createSignal, onCleanup, onMount, type Component } from "solid-js
 import type { DropdownAnchor } from "../../types.js";
 import { nativeCancelAnimationFrame, nativeRequestAnimationFrame } from "../../utils/native-raf.js";
 import { REACT_GRAB_ATTRIBUTE_NAME } from "../../utils/react-grab-attribute-name.js";
-import { ToolbarActionButton } from "../../components/toolbar/toolbar-action-button.js";
 import { CommentHistoryDropdown } from "./comment-history-dropdown.js";
 import { loadCommentHistory, subscribeToCommentHistory } from "./comment-history-store.js";
-import { IconCommentHistory } from "./icon-comment-history.js";
-import { COMMENT_HISTORY_ICON_SIZE_PX } from "./constants.js";
 import type { CommentHistoryItem } from "./types.js";
 
-interface CommentHistoryToolbarProps {
+interface CommentHistoryBadgeProps {
   edge: "top" | "bottom" | "left" | "right";
-  buttonClass: string;
-  wrapperClass: string;
-  iconClass: string;
-  tooltipPosition: "top" | "bottom" | "left" | "right";
   createDragAwareHandler: (handler: () => void) => (event: MouseEvent) => void;
   onMouseEnter: (event: MouseEvent) => void;
   onMouseLeave: () => void;
 }
 
-export const CommentHistoryToolbar: Component<CommentHistoryToolbarProps> = (props) => {
+export const CommentHistoryBadge: Component<CommentHistoryBadgeProps> = (props) => {
   let buttonElement: HTMLButtonElement | undefined;
   let positionFrameId: number | null = null;
   const [items, setItems] = createSignal<CommentHistoryItem[]>(loadCommentHistory());
   const [isOpen, setIsOpen] = createSignal(false);
-  const [isHovered, setIsHovered] = createSignal(false);
   const [position, setPosition] = createSignal<DropdownAnchor | null>(null);
   const [portalMount, setPortalMount] = createSignal<HTMLElement | undefined>();
 
@@ -104,30 +96,24 @@ export const CommentHistoryToolbar: Component<CommentHistoryToolbarProps> = (pro
   });
 
   return (
-    <Show when={items().length > 0}>
-      <ToolbarActionButton
-        actionId="comment-history"
-        ref={(element) => {
-          buttonElement = element;
-          queueMicrotask(updatePortalMount);
-        }}
-        label={`Open comments (${items().length})`}
-        class={props.buttonClass}
-        wrapperClass={props.wrapperClass}
-        onClick={handleToggle}
-        onMouseEnter={(event) => {
-          setIsHovered(true);
-          props.onMouseEnter(event);
-        }}
-        onMouseLeave={() => {
-          setIsHovered(false);
-          props.onMouseLeave();
-        }}
-        icon={<IconCommentHistory size={COMMENT_HISTORY_ICON_SIZE_PX} class={props.iconClass} />}
-        tooltip="Comments"
-        tooltipVisible={isHovered() && !isOpen()}
-        tooltipPosition={props.tooltipPosition}
-      />
+    <>
+      <Show when={items().length > 0}>
+        <button
+          ref={(element) => {
+            buttonElement = element;
+            queueMicrotask(updatePortalMount);
+          }}
+          data-react-grab-ignore-events
+          data-react-grab-comment-history-badge
+          aria-label={`Open comments (${items().length})`}
+          type="button"
+          class="absolute -right-1.5 -top-1.5 z-1 flex h-3.5 min-w-3.5 cursor-pointer items-center justify-center rounded-full bg-[var(--rg-text-primary)] px-0.5 text-[9px] leading-none font-medium text-[var(--rg-panel-bg)] interactive-scale"
+          onClick={handleToggle}
+          onMouseEnter={props.onMouseEnter}
+          onMouseLeave={props.onMouseLeave}
+          textContent={String(items().length)}
+        />
+      </Show>
       <Show when={portalMount()}>
         {(mount) => (
           <Portal mount={mount()}>
@@ -139,6 +125,6 @@ export const CommentHistoryToolbar: Component<CommentHistoryToolbarProps> = (pro
           </Portal>
         )}
       </Show>
-    </Show>
+    </>
   );
 };

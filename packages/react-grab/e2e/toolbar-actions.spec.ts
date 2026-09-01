@@ -38,6 +38,37 @@ test.describe("Toolbar Action Buttons", () => {
       await reactGrab.clickElement(BUTTON_SELECTOR);
       await expect.poll(() => reactGrab.isPromptModeActive(), { timeout: 2000 }).toBe(true);
     });
+
+    test("keeps Comment active after submitting so another element can be commented", async ({
+      reactGrab,
+    }) => {
+      await waitForToolbar(reactGrab);
+      await reactGrab.clickToolbarAction("comment");
+      await reactGrab.hoverUntilSelected("button");
+      await reactGrab.clickElement("button");
+      await reactGrab.typeInInput("First comment");
+      await reactGrab.submitInput();
+
+      await expect.poll(() => reactGrab.isPromptModeActive()).toBe(false);
+      await expect.poll(() => reactGrab.getToolbarActionPressed("comment")).toBe(true);
+
+      await reactGrab.hoverUntilSelected("h1");
+      await reactGrab.clickElement("h1");
+      await expect.poll(() => reactGrab.isPromptModeActive()).toBe(true);
+    });
+
+    test("stops persistent Comment mode with Escape", async ({ reactGrab }) => {
+      await waitForToolbar(reactGrab);
+      await reactGrab.clickToolbarAction("comment");
+      await reactGrab.hoverUntilSelected("button");
+      await reactGrab.clickElement("button");
+      await reactGrab.typeInInput("Stop after this comment");
+      await reactGrab.submitInput();
+
+      await expect.poll(() => reactGrab.getToolbarActionPressed("comment")).toBe(true);
+      await reactGrab.deactivate();
+      expect(await reactGrab.getToolbarActionPressed("comment")).toBe(false);
+    });
   });
 
   test.describe("Active-state attribution", () => {
