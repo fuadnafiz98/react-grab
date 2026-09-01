@@ -1,5 +1,16 @@
 # grab
 
+## Fork 0.3.1
+
+### Minor Changes
+
+- 3faf13b: Keep toolbar comment mode active for repeated selections and show saved comment history through the Comment button badge.
+
+### Patch Changes
+
+- Updated dependencies [3faf13b]
+  - @react-grab/cli@0.3.1
+
 ## Fork 0.1.0
 
 ### Patch Changes
