@@ -8,7 +8,9 @@ const waitForToolbar = async (reactGrab: ReactGrabPageObject) => {
 
 test.describe("Toolbar Action Buttons", () => {
   test.describe("Layout", () => {
-    test("renders only the copy button, unpressed initially", async ({ reactGrab }) => {
+    test("renders separate Copy and Comment buttons, unpressed initially", async ({
+      reactGrab,
+    }) => {
       await waitForToolbar(reactGrab);
 
       const actionIds = await reactGrab.page
@@ -16,26 +18,22 @@ test.describe("Toolbar Action Buttons", () => {
         .evaluateAll((elements) =>
           elements.map((element) => element.getAttribute("data-react-grab-toolbar-action")),
         );
-      expect(actionIds).toEqual(["copy"]);
+      expect(actionIds).toEqual(["copy", "comment"]);
       expect(await reactGrab.getToolbarActionPressed("copy")).toBe(false);
+      expect(await reactGrab.getToolbarActionPressed("comment")).toBe(false);
     });
 
-    test("represents the selected default action with the single button", async ({ reactGrab }) => {
+    test("opens the comment box after selecting an element with Comment", async ({ reactGrab }) => {
       await waitForToolbar(reactGrab);
-      await reactGrab.page.evaluate(() => {
-        window.__REACT_GRAB__?.setToolbarState({ defaultAction: "comment" });
-      });
 
-      await expect
-        .poll(() => reactGrab.getToolbarActionPressed("comment"), { timeout: 2000 })
-        .toBe(false);
       await expect(
         reactGrab.page.locator('[data-react-grab-toolbar-action="comment"]'),
-      ).toHaveAttribute("aria-label", "Comment element");
+      ).toHaveAttribute("aria-label", "Comment on element");
 
       await reactGrab.clickToolbarAction("comment");
 
       expect(await reactGrab.getToolbarActionPressed("comment")).toBe(true);
+      expect(await reactGrab.getToolbarActionPressed("copy")).toBe(false);
       await reactGrab.hoverUntilSelected(BUTTON_SELECTOR);
       await reactGrab.clickElement(BUTTON_SELECTOR);
       await expect.poll(() => reactGrab.isPromptModeActive(), { timeout: 2000 }).toBe(true);

@@ -482,6 +482,7 @@ export interface ReactGrabRendererProps {
   toolbarVisible?: boolean;
   isActive?: boolean;
   onToggleActive?: () => void;
+  onActivateAction?: (actionId: string) => void;
   activeActionId?: string | null;
   enabled?: boolean;
   shakeCount?: number;
@@ -501,7 +502,6 @@ export interface ReactGrabRendererProps {
   toolbarMenuPosition?: DropdownAnchor | null;
   toolbarMenuActions?: ContextMenuAction[];
   defaultActionId?: string;
-  defaultActionLabel?: string;
   onSetDefaultAction?: (actionId: string) => void;
   onToggleToolbarMenu?: () => void;
   onToolbarMenuDismiss?: () => void;
