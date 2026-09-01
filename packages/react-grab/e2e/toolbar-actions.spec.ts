@@ -52,9 +52,17 @@ test.describe("Toolbar Action Buttons", () => {
       await expect.poll(() => reactGrab.isPromptModeActive()).toBe(false);
       await expect.poll(() => reactGrab.getToolbarActionPressed("comment")).toBe(true);
 
-      await reactGrab.hoverUntilSelected("h1");
+      await reactGrab.hoverUntilTargetSelected("h1");
+      await expect.poll(async () => (await reactGrab.getSelectionLabelInfo()).tagName).toBe("h1");
       await reactGrab.clickElement("h1");
       await expect.poll(() => reactGrab.isPromptModeActive()).toBe(true);
+      await reactGrab.typeInInput("Second comment");
+      await reactGrab.submitInput();
+
+      await expect.poll(() => reactGrab.isPromptModeActive()).toBe(false);
+      await expect(reactGrab.page.locator("[data-react-grab-comment-history-badge]")).toHaveText(
+        "2",
+      );
     });
 
     test("stops persistent Comment mode with Escape", async ({ reactGrab }) => {

@@ -1796,11 +1796,13 @@ export const init = (rawOptions?: Options): ReactGrabAPI => {
       const firstBounds = currentSelectionBounds[0];
       const { x: currentX, y: currentY } = getBoundsCenter(firstBounds);
       const labelPositionX = currentX + store.copyOffsetFromCenterX;
+      const shouldContinueCommenting = isPersistentCommentMode;
 
       actions.setPointer({ x: currentX, y: currentY });
       actions.exitPromptMode();
       actions.clearInputText();
-      if (isPersistentCommentMode) {
+      if (shouldContinueCommenting) {
+        actions.unfreeze();
         actions.setPendingCommentMode(true);
         actions.setWasActivatedByToggle(false);
       }
@@ -1810,7 +1812,11 @@ export const init = (rawOptions?: Options): ReactGrabAPI => {
         cursorX: labelPositionX,
         selectedElements: elements,
         extraPrompt: prompt || undefined,
-        shouldDeactivateAfter: !isPersistentCommentMode,
+        shouldDeactivateAfter: !shouldContinueCommenting,
+        onComplete: () => {
+          if (!shouldContinueCommenting || !isPersistentCommentMode || !isActivated()) return;
+          redetectElementUnderPointer();
+        },
       });
     };
 
